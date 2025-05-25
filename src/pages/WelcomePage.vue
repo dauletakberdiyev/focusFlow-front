@@ -35,7 +35,7 @@
     }
   }
   async function createUser(user: any) {
-    const { data, error } = await supabase.from('users').insert({
+    await supabase.from('users').insert({
       tg_id: user.id,
       firt_name: user.first_name,
       tg_username: user?.username,
