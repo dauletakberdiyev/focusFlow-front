@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import Footer from '../components/Footer.vue'
   import { ref, onMounted } from 'vue'
 
   const username = ref('User');
@@ -27,5 +26,4 @@
       Get Started
     </router-link>
   </div>
-  <Footer />
 </template>
