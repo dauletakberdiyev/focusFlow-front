@@ -6,7 +6,7 @@
   const username = ref('User');
   const tgId = ref('');
 
-  const user = ref<User | null>(null);
+  const exsistUser = ref<User | null>(null);
  
   onMounted(() => {
     // @ts-ignore
@@ -20,7 +20,7 @@
 
       getUser(tgId.value);
 
-      if (!user.value) {
+      if (!exsistUser.value) {
         createUser(tgUser);
       }
     }
@@ -31,7 +31,7 @@
     if (error) {
       throw error;
     } else {
-      user.value = data;
+      exsistUser.value = data;
     }
   }
   async function createUser(user: any) {
