@@ -20,19 +20,6 @@
 
       getUser(tgUser);
     }
-    // // @ts-ignore
-    // const tgUser = {
-    //   username: 'test1',
-    //   id: '32',
-    //   first_name: 'tes2',
-    //   photo_url: 'test2'
-    // };
-    // // @ts-ignore
-    // username.value = tgUser?.username;
-    // // @ts-ignore
-    // tgId.value = tgUser.id;
-
-    // getUser(tgUser);
   });
 
   async function getUser(tgUser: any) {
