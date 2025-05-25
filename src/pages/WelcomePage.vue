@@ -8,6 +8,7 @@
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user && window.Telegram.WebApp.initDataUnsafe.user.username) {
       // @ts-ignore
       username.value = window.Telegram.WebApp.initDataUnsafe.user.username
+      console.log(window.Telegram.WebApp.initDataUnsafe.user.id);
     }
   })
 </script> 
