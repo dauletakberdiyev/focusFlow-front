@@ -2,7 +2,7 @@
   import Footer from '../components/Footer.vue';
   import { supabase } from '../supabase';
   import { ref, onMounted } from 'vue'
-  import { User } from '../types/userType';
+  import type { User } from '../types/user';
 
   const users = ref<User[]>([])
 
