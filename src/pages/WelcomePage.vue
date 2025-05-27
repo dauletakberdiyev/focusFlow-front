@@ -1,12 +1,13 @@
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
-  import type { User } from '../types/user';
-  import { supabase } from '../supabase';
+  import { ref, onMounted } from 'vue';
+  import { useUserStore } from '../stores/user';
 
+  const userStore = useUserStore();
+  
   const username = ref('User');
   const tgId = ref('');
 
-  const exsistUser = ref<User | null>(null);
+  // const exsistUser = computed(() => userStore.user);
  
   onMounted(() => {
     // @ts-ignore
@@ -18,32 +19,32 @@
       // @ts-ignore
       tgId.value = tgUser.id;
 
-      getUser(tgUser);
+      userStore.authUser(tgUser);
     }
   });
 
-  async function getUser(tgUser: any) {
-    const { data, error } = await supabase.from('users').select('*').eq('tg_id', tgUser.id).single();
-    if (error) {
-      createUser(tgUser);
-    } else {
-      exsistUser.value = data;
-    }
-  }
+  // async function getUser(tgUser: any) {
+  //   const { data, error } = await supabase.from('users').select('*').eq('tg_id', tgUser.id).single();
+  //   if (error) {
+  //     createUser(tgUser);
+  //   } else {
+  //     exsistUser.value = data;
+  //   }
+  // }
 
-  async function createUser(user: any) {
-    await supabase.from('users').insert({
-      tg_id: user.id,
-      firt_name: user.first_name,
-      tg_username: user?.username,
-      photo_url: user?.photo_url
-    });
-  }
+  // async function createUser(user: any) {
+  //   await supabase.from('users').insert({
+  //     tg_id: user.id,
+  //     firt_name: user.first_name,
+  //     tg_username: user?.username,
+  //     photo_url: user?.photo_url
+  //   });
+  // }
 </script> 
 
 <template>
   <div class="flex flex-col items-center justify-center h-screen">
-    <div class="text-2xl font-medium">Welcome {{ username }}! Your ID: {{ tgId }}</div>
+    <div class="text-2xl font-medium">Welcome {{ username }}!</div>
     <div class="text-2xl font-medium mb-4">Focus on what matters</div>
     <div class="text-base">
       Boost your productivity with our task tracking app, featuring a built-in Pomodoro timer to help
