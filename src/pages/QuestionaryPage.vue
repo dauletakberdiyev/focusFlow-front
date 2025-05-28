@@ -1,83 +1,98 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  
-  const step = ref(1)
+import { computed, onMounted, ref, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuestionStore } from '../stores/question'
+import { useUserStore } from '../stores/user';
+import type { Answer, SubmitAnswers } from '../types/question';
 
-  const mainGoal = ref('')
-  const focusChallenge = ref('')
+const questionStore = useQuestionStore();
+const userStore = useUserStore();
 
-  const handleNext = () => {
-    if (step.value === 1 && mainGoal.value) {
-      step.value = 2
-    }
-    // You can add more steps here if needed
+const questions = computed(() => questionStore.questions);
+const user = computed(() => userStore.user);
+
+const step = ref(1);
+
+const mainGoal: Ref<Answer | null> = ref(null);
+const focusChallenge: Ref<Answer | null> = ref(null);
+const answers: Ref<SubmitAnswers[]> = ref([]);
+
+const handleNext = () => {
+  if (step.value === 1 && mainGoal.value) {
+    step.value = 2
   }
-  
-  const router = useRouter()
+}
 
-  const handleSubmit = () => {
-    router.push({ name: 'home' })
+const router = useRouter()
+
+const handleSubmit = () => {
+  if (mainGoal.value) {
+    answers.value.push({
+      user_id: parseInt(user.value?.id!),
+      question_id: mainGoal.value.question_id,
+      answer_id: mainGoal.value.id
+    });
   }
+  if (focusChallenge.value) {
+    answers.value.push({
+      user_id: parseInt(user.value?.id!),
+      question_id: focusChallenge.value.question_id,
+      answer_id: focusChallenge.value.id
+    });
+  }
+  questionStore.submitAnswers(answers.value);
+  
+  router.push({ name: 'home' })
+}
+
+onMounted(() => {
+  questionStore.getQuestions();
+})
 </script>
 
 <template>
-<!-- Patch the original question radios to use v-model and only show on step 1 -->
   <div class="text-lg">Personalize your experience</div>
-  <template v-if="step === 1">
+  <template v-if="step === 1 && questions && questions.length > 0">
     <div class="mt-10">
-      <div class="text-2xl font-semibold">What is your main goals for using this app?</div>
+      <div class="text-2xl font-semibold">{{ questions[0]?.text }}</div>
       <div class="flex flex-col gap-4 my-4 text-start">
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="mainGoal" v-model="mainGoal" value="Improve productivity and time management"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Improve productivity and time management</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="mainGoal" v-model="mainGoal" value="Track and complete daily tasks"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Track and complete daily tasks</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="mainGoal" v-model="mainGoal" value="Stay focused during work sessions"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Stay focused during work sessions</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="mainGoal" v-model="mainGoal" value="Build better work habits"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Build better work habits</span>
+        <label
+          v-for="option in questions[0]?.answer_options"
+          :key="option.id"
+          class="flex items-center gap-3 cursor-pointer"
+        >
+          <input
+            type="radio"
+            name="mainGoal"
+            v-model="mainGoal"
+            :value="option"
+            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <span class="select-none peer-checked:text-blue-600">{{ option.text }}</span>
         </label>
       </div>
     </div>
   </template>
 
-  <template v-if="step === 2">
-    <div class="mt-10 w-full flex flex-col items-center">
-      <div class="text-2xl font-semibold">What is your biggest challenge with staying focused?</div>
-      <div class="flex flex-col gap-4 my-4 text-start w-full max-w-md">
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="focusChallenge" v-model="focusChallenge" value="Distractions from phone/social media"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Distractions from phone/social media</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="focusChallenge" v-model="focusChallenge" value="Procrastination"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Procrastination</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="focusChallenge" v-model="focusChallenge" value="Lack of motivation"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Lack of motivation</span>
-        </label>
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="radio" name="focusChallenge" v-model="focusChallenge" value="Too many tasks at once"
-            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-          <span class="select-none peer-checked:text-blue-600">Too many tasks at once</span>
+  <template v-if="step === 2 && questions && questions.length > 0">
+    <div class="mt-10">
+      <div class="text-2xl font-semibold">{{ questions[1]?.text }}</div>
+      <div class="flex flex-col gap-4 my-4 text-start">
+        <label
+          v-for="option in questions[1]?.answer_options"
+          :key="option.id"
+          class="flex items-center gap-3 cursor-pointer"
+        >
+          <input
+            type="radio"
+            name="focusChallenge"
+            v-model="focusChallenge"
+            :value="option"
+            class="peer appearance-none w-5 h-5 rounded-full border-2 border-blue-400 checked:bg-blue-500 checked:border-blue-500 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <span class="select-none peer-checked:text-blue-600">{{ option.text }}</span>
         </label>
       </div>
-      <!-- You can add another button for "Finish" or "Continue" here if needed -->
     </div>
   </template>
 

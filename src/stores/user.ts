@@ -26,9 +26,21 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const getUser = async(userId: number) => {
+        user.value = null;
+
+        try {
+            user.value = await userService().getUser(userId);
+        }
+        catch (error) {
+            throw new Error();
+        }
+    }
+
     return {
         user,
         authUser,
         createUser,
+        getUser
     }
 });
