@@ -10,7 +10,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = null;
 
         try {
-            user.value = await userService().getUser(parseInt(tgUser.id));
+            user.value = await userService().getUserByTgId(parseInt(tgUser.id));
         }
         catch (error) {
             createUser(tgUser);
@@ -43,4 +43,8 @@ export const useUserStore = defineStore('user', () => {
         createUser,
         getUser
     }
+}, {
+    persist: {
+        paths: ['user.id']
+    },
 });

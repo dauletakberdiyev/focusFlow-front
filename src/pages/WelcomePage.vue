@@ -17,7 +17,7 @@ onMounted(() => {
     userStore.authUser(tgUser);
   }
   else {
-    userStore.getUser(7444943529).then(() => {
+    userStore.getUser(21).then(() => {
       const user = userStore.user;
       username.value = user?.first_name as string;
     });

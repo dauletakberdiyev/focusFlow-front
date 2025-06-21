@@ -1,5 +1,17 @@
 <script setup lang="ts">
   import { RouterView } from 'vue-router'
+  import { useUserStore } from './stores/user';
+  import { storeToRefs } from 'pinia';
+  import { onMounted } from 'vue';
+
+  const userStore = useUserStore();
+  const { user } = storeToRefs(userStore);
+
+  onMounted(() => {
+    if (user.value?.id) {
+      userStore.getUser(parseInt(user.value.id));
+    }
+  });
 </script>
 
 <template>

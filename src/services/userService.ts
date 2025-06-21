@@ -2,8 +2,18 @@ import type { User, tgUser } from "../types/user";
 import { supabase } from "../supabase";
 
 export default () => ({
-    getUser: async (tgId: number): Promise<User> => {
+    getUserByTgId: async (tgId: number): Promise<User> => {
         const { data, error } = await supabase.from('users').select('*').eq('tg_id', tgId).single(); 
+
+        if (error) {
+            throw new Error();
+        }
+        
+        return data;
+    },
+
+    getUser: async (user_id: number): Promise<User> => {
+        const { data, error } = await supabase.from('users').select('*').eq('id', user_id).single(); 
 
         if (error) {
             throw new Error();
