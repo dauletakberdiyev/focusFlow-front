@@ -22,7 +22,7 @@ export default () => ({
     },
 
     submitAnswers: async (userAnswers: SubmitAnswers[]): Promise<void> => {
-        const { data, error } = await supabase.from('user_answers')
+        const { error } = await supabase.from('user_answers')
             .insert(userAnswers)
             .select();
 

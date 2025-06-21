@@ -44,7 +44,5 @@ export const useUserStore = defineStore('user', () => {
         getUser
     }
 }, {
-    persist: {
-        paths: ['user.id']
-    },
+    persist: true,
 });
