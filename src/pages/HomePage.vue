@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import Footer from '../components/Footer.vue';
-import { computed, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useUserStore } from '../stores/user';
 import { storeToRefs } from 'pinia';
 import { useTaskStore } from '../stores/task';
+import userService from '../services/userService';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const userStore = useUserStore();
 const taskStore = useTaskStore();
@@ -20,6 +24,30 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(() => {
+  let tgUserId;
+  // @ts-ignore
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+    // @ts-ignore
+    tgUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
+  }
+  else {
+    tgUserId = 7444943529;
+  }
+  
+  try {
+    userService().getUserByTgId(tgUserId).then((user)=>{
+      console.log(user);
+    })
+    .catch(() => {
+      router.push({ name: 'welcome' });
+    })
+  } 
+  catch (error) {
+    router.push({ name: 'welcome' });
+  }
+})
 </script> 
 
 <template>
