@@ -1,6 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Footer from '../components/Footer.vue'
+import { useTaskStore } from '../stores/task'
+import { useUserStore } from '../stores/user';
+import { storeToRefs } from 'pinia';
+
+const userStore = useUserStore();
+const taskStore = useTaskStore();
+const { user } = storeToRefs(userStore);
+
+const notCompletedTasks = computed(() => taskStore.notCompletedTasks);
+const completedTasks = computed(() => taskStore.completedTasks);
+
+watch(
+  user,
+  (newUser) => {
+    if (newUser?.id) {
+      taskStore.getCompletedTasks(parseInt(newUser.id));
+      taskStore.getNotCompletedTasks(parseInt(newUser.id));
+    }
+  },
+  { immediate: true }
+);
 
 const activeTab = ref<'todo' | 'completed'>('todo')
 const slideDirection = ref<'left' | 'right'>('left')
@@ -44,6 +65,10 @@ function handleTouchEnd(event: TouchEvent) {
   startX = 0
   startY = 0
 }
+
+const handleToggle = (task_id: number) => {
+  taskStore.toggleTask(parseInt(user.value!.id), task_id);
+}
 </script>
 
 <template>
@@ -85,10 +110,37 @@ function handleTouchEnd(event: TouchEvent) {
         :leave-to-class="slideDirection === 'left' ? 'transform -translate-x-full opacity-0' : 'transform translate-x-full opacity-0'"
       >
         <div v-if="activeTab === 'todo'" key="todo" class="w-full">
-          To Do tasks here...
+          <div
+            v-for="task in notCompletedTasks"
+            :key="task.id"
+            class="flex gap-2 items-center px-3 py-2 rounded-sm text-xl"
+          >
+            <input
+              type="checkbox"
+              name="task1"
+              class="w-5 h-5"
+              v-on:click="handleToggle(task.id)"
+            />
+            <span class="">{{ task.title }}</span>
+          </div>
         </div>
         <div v-else key="completed" class="w-full">
-          Completed tasks here...
+          <div v-if="completedTasks?.length === 0">
+            Ups! You don't have completed tasks yet.
+          </div>
+          <div
+            v-else
+            v-for="task in completedTasks"
+            :key="task.id"
+            class="flex gap-2 items-center px-3 py-2 rounded-sm text-xl"
+          >
+            <input
+              type="checkbox"
+              name="task1"
+              class="w-5 h-5"
+            />
+            <span class="">{{ task.title }}</span>
+          </div>
         </div>
       </Transition>
     </div>
