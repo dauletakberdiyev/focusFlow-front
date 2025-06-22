@@ -37,9 +37,7 @@ onMounted(() => {
   }
   
   try {
-    userService().getUserByTgId(tgUserId).then((user)=>{
-      console.log(user);
-    })
+    userService().getUserByTgId(tgUserId)
     .catch(() => {
       router.push({ name: 'welcome' });
     })
@@ -111,26 +109,6 @@ onMounted(() => {
           />
           <span class="">{{ task.title }}</span>
         </div>
-        <!-- <div
-          class="flex gap-2 items-center bg-gray-200 px-3 py-2 rounded-sm"
-        >
-          <input
-            type="checkbox"
-            name="task2"
-            class="w-5 h-5"
-          />
-          <span class="">Task todo 2</span>
-        </div>
-        <div
-          class="flex gap-2 items-center bg-gray-200 px-3 py-2 rounded-sm"
-        >
-          <input
-            type="checkbox"
-            name="task3"
-            class="w-5 h-5"
-          />
-          <span class="">Task todo 3</span>
-        </div> -->
       </div>
     </div>
     <div class="flex flex-col my-3 items-center">

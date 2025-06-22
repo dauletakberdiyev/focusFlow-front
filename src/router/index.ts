@@ -22,6 +22,16 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: () => import('../pages/HomePage.vue')
+    },
+    {
+      path: '/tasks',
+      name: 'tasks',
+      component: () => import('../pages/TaskPage.vue')
+    },
+    {
+      path: '/pomodoro',
+      name: 'pomodoro',
+      component: () => import('../pages/PomodoroPage.vue')
     }
   ]
 })
